@@ -1,0 +1,4 @@
+name: QQBot
+version: '${project.version}'
+main: sudark.qqbot.QQBot
+api-version: '1.21'
