@@ -38,8 +38,6 @@ public final class QQBot extends JavaPlugin {
     }
 
     public class PlayerChatEvent implements Listener {
-        public PlayerChatEvent() {
-        }
 
         @EventHandler
         public void onChat(AsyncPlayerChatEvent event) {
@@ -56,15 +54,19 @@ public final class QQBot extends JavaPlugin {
         public void onJoin(PlayerPreLoginEvent event) {
 
             String uuids = event.getUniqueId().toString();
+            String name = event.getName();
             AllowList al = new AllowList();
 
-            if(al.checkAllowListByUUID(uuids) == null){
-                event.setResult(PlayerPreLoginEvent.Result.KICK_WHITELIST);
-                event.setKickMessage("您还没有绑定白名单\n\n请在群中发送“绑定 + 空格 + id”\n\nQQ群： 808 298 146");
+            if (al.checkAllowListByName(name) != null) {
+                if (al.checkAllowListByUUID(uuids,name) != null || al.checkAllowListByName(name).equals("+")) {
+                    return;
+                }
             }
 
-        }
+            event.setResult(PlayerPreLoginEvent.Result.KICK_WHITELIST);
+            event.setKickMessage("您还没有绑定白名单\n\n请在群中发送“绑定 + 空格 + id”\n\nQQ群： 808 298 146");
 
+        }
 
 
     }

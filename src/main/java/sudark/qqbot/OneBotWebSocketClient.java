@@ -234,7 +234,27 @@ public class OneBotWebSocketClient extends WebSocketClient {
                     } else {
                         Bukkit.broadcastMessage("[§e" + card + "§f] " + msg);
                     }
+
+                case "notice": {
+
+                    if (json.containsKey("post_type") && json.get("post_type").equals("group_decrease")) {
+                        qq = json.get("user_id").toString();
+
+                        List<List<String>> data = al.readCSV(dataFile);
+
+                        for (List<String> row : data) {
+                            if (row.get(1).equals(qq)) {
+                                data.remove(row);
+                                al.writeCSV(dataFile, data);
+                                sendG("已将 " + row.get(2) + " 从白名单中移除");
+                            }
+                        }
+                    }
+
+                }
             }
+
+
         }
 
     }

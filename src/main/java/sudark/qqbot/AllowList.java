@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AllowList {
     File dataFolder = Bukkit.getPluginsFolder();
@@ -28,12 +29,17 @@ public class AllowList {
     }
 
     //检查是否在白名单
-    public String checkAllowListByUUID(String name) {
+    public String checkAllowListByUUID(String uuid,String name) {
 
         List<List<String>> data = readCSV(dataFile);
 
         for (List<String> row : data) {
-            if (row.get(0).equals(name)) {
+            if (row.get(0).equals(uuid)) {
+                if(!row.get(2).equals(name)){
+                    row.set(2,name);
+                    Bukkit.getPlayer(UUID.fromString(uuid)).sendMessage("您的旧名字 [§e"+name + "§f] 已更新");
+                    writeCSV(dataFile,data);
+                }
                 return row.get(1);
             }
         }
