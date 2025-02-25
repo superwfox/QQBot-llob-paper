@@ -1,0 +1,4 @@
+name: QQBot
+version: '1.0-SNAPSHOT'
+main: sudark.qqbot.QQBot
+api-version: '1.21'

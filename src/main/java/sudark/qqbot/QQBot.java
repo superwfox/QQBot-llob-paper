@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.UUID;
 
 public final class QQBot extends JavaPlugin {
 
@@ -53,14 +52,13 @@ public final class QQBot extends JavaPlugin {
         @EventHandler
         public void onJoin(PlayerPreLoginEvent event) {
 
-            String uuids = event.getUniqueId().toString();
+            String uuid = event.getUniqueId().toString();
             String name = event.getName();
             AllowList al = new AllowList();
 
-            if (al.checkAllowListByName(name) != null) {
-                if (al.checkAllowListByUUID(uuids,name) != null || al.checkAllowListByName(name).equals("+")) {
-                    return;
-                }
+            if (al.checkAllowListByName(name) != null || al.checkAllowListByUUID(uuid) != null) {
+                al.changeName(uuid, name);
+                return;
             }
 
             event.setResult(PlayerPreLoginEvent.Result.KICK_WHITELIST);

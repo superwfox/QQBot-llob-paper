@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class AllowList {
-    File dataFolder = Bukkit.getPluginsFolder();
+    File dataFolder = Bukkit.getPluginManager().getPlugin("QQBot").getDataFolder();
     File dataFile = new File(dataFolder, "allowlist.csv");
 
     //检查文件是否存在
@@ -29,17 +29,12 @@ public class AllowList {
     }
 
     //检查是否在白名单
-    public String checkAllowListByUUID(String uuid,String name) {
+    public String checkAllowListByUUID(String uuid) {
 
         List<List<String>> data = readCSV(dataFile);
 
         for (List<String> row : data) {
             if (row.get(0).equals(uuid)) {
-                if(!row.get(2).equals(name)){
-                    row.set(2,name);
-                    Bukkit.getPlayer(UUID.fromString(uuid)).sendMessage("您的旧名字 [§e"+name + "§f] 已更新");
-                    writeCSV(dataFile,data);
-                }
                 return row.get(1);
             }
         }
@@ -58,6 +53,25 @@ public class AllowList {
         }
 
         return null;
+    }
+
+    //修改名字
+    public void changeName(String uuid, String name) {
+        List<List<String>> data = readCSV(dataFile);
+
+        for (List<String> row : data) {
+            if (row.get(0).equals(uuid)) {
+                if (!row.get(2).equals(name)) {
+
+                    Bukkit.getPlayer(UUID.fromString(uuid)).sendMessage("您的旧名字 [§e" + name + "§f] 已更新");
+                    Bukkit.getLogger().info("玩家 " + row.get(2) + "[" + uuid + "] 已更名为 " + name);
+
+                    row.set(2, name);
+                    writeCSV(dataFile, data);
+                }
+            }
+        }
+
     }
 
     //读文件

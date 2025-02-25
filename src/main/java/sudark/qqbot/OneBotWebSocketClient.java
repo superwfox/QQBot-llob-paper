@@ -10,18 +10,15 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class OneBotWebSocketClient extends WebSocketClient {
     QQBot qqBot = (QQBot) Bukkit.getPluginManager().getPlugin("QQBot");
     AllowList al = new AllowList();
     private String msg;
-    File dataFolder = Bukkit.getPluginsFolder();
+    File dataFolder = Bukkit.getPluginManager().getPlugin("QQBot").getDataFolder();
     File dataFile = new File(dataFolder, "allowlist.csv");
-    Set<String> confirmList = null;
+    Set<String> confirmList = new HashSet<>();
 
     public OneBotWebSocketClient(URI serverUri) {
         super(serverUri);
@@ -121,9 +118,10 @@ public class OneBotWebSocketClient extends WebSocketClient {
         JSONObject json = JSONObject.fromObject(s);
         String msg;
         String qq = "";
-        if (json.containsKey("user_id") && json.containsKey("raw_message") && json.getString("user_id").equals("2054565750")) {
+        if (json.containsKey("user_id")) {
             qq = json.getString("user_id");
         }
+
         if (json.containsKey("raw_message") && qq.equals("2054565750")) {
             msg = json.getString("raw_message");
             if (msg.startsWith("c/")) {
@@ -201,7 +199,6 @@ public class OneBotWebSocketClient extends WebSocketClient {
 
                         for (List<String> row : data) {
                             if (row.get(1).equals(qq)) {
-                                if (row.get(2).equals("+")) break;
                                 this.sendG("您的QQ已经绑定账号\n [" + row.get(2) + "]\n需要换绑请发 是的");
                                 confirmList.add(qq);
                                 return;
@@ -214,13 +211,14 @@ public class OneBotWebSocketClient extends WebSocketClient {
 
                     }
 
-                    if (confirmList.contains(qq)) {
+                    if (!confirmList.isEmpty() && confirmList.contains(qq)) {
                         if (msg.equals("是的")) {
                             List<List<String>> data = al.readCSV(dataFile);
                             for (List<String> row : data) {
                                 if (row.get(1).equals(qq)) {
-                                    row.set(2, "+");
+                                    data.remove(row);
                                     al.writeCSV(dataFile, data);
+                                    sendG("请按下方格式绑定新账号\n\n  绑定 + 空格 + id");
                                     break;
                                 }
                             }
